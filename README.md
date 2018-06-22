@@ -9,6 +9,7 @@ DroneKit-Python helps you create powerful apps for UAVs.
 
 ## Build and setup
 python setup.py build
+
 python setup.py install
 
 ## Overview
