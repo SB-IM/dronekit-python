@@ -131,6 +131,9 @@ class LocationGlobal(object):
     def __str__(self):
         return "LocationGlobal:lat=%s,lon=%s,alt=%s" % (self.lat, self.lon, self.alt)
 
+    def to_json(self):
+        return  { 'lat': self.lat, 'lon': self.lon, 'alt': self.alt }
+
 
 class LocationGlobalRelative(object):
     """
@@ -197,7 +200,7 @@ class LocationLocal(object):
 
         if self.north is not None and self.east is not None:
             if self.down is not None:
-                return math.sqrt(self.north**2 + self.east**2 + self.down**2) 
+                return math.sqrt(self.north**2 + self.east**2 + self.down**2)
             else:
                 return math.sqrt(self.north**2 + self.east**2)
 
