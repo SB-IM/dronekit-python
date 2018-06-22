@@ -1,7 +1,5 @@
 # DroneKit Python
 
-![dronekit_python_logo](https://cloud.githubusercontent.com/assets/5368500/10805537/90dd4b14-7e22-11e5-9592-5925348a7df9.png)
-
 ![PyPi published version](https://img.shields.io/pypi/v/dronekit.svg)
 [![Windows Build status](https://img.shields.io/appveyor/ci/3drobotics/dronekit-python/master.svg?label=windows)](https://ci.appveyor.com/project/3drobotics/dronekit-python/branch/master)
 [![OS X Build Status](https://img.shields.io/travis/dronekit/dronekit-python/master.svg?label=os%20x)](https://travis-ci.org/dronekit/dronekit-python)
@@ -9,6 +7,9 @@
 
 DroneKit-Python helps you create powerful apps for UAVs.
 
+## Build and setup
+python setup.py build
+python setup.py install
 
 ## Overview
 
