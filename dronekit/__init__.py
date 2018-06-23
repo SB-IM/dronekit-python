@@ -131,7 +131,7 @@ class LocationGlobal(object):
     def __str__(self):
         return "LocationGlobal:lat=%s,lon=%s,alt=%s" % (self.lat, self.lon, self.alt)
 
-    def to_json(self):
+    def to_dict(self):
         return  { 'lat': self.lat, 'lon': self.lon, 'alt': self.alt }
 
 
