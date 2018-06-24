@@ -1141,42 +1141,34 @@ class Vehicle(HasObservers):
             self.notify_attribute_listeners('channels', self.channels)
 
         # Servo outputs
-        self._servo_output_raw = ServoOutputRaw()
+        self._servos = Servos(self, 16)
 
         # Create a message listener using the decorator.
         @self.on_message('SERVO_OUTPUT_RAW')
-        def listener(self, name, message):
-            """
-            The listener is called for messages that contain the string specified in the decorator,
-            passing the vehicle, message name, and the message.
-            The listener writes the message to the (newly attached) ``vehicle.raw_imu`` object
-            and notifies observers.
-            """
-            self._servo_output_raw.time_boot_us = message.time_usec
-            self._servo_output_raw.port = message.port
-            self._servo_output_raw.servo1_raw = message.servo1_raw
-            self._servo_output_raw.servo2_raw = message.servo2_raw
-            self._servo_output_raw.servo3_raw = message.servo3_raw
-            self._servo_output_raw.servo4_raw = message.servo4_raw
-            self._servo_output_raw.servo5_raw = message.servo5_raw
-            self._servo_output_raw.servo6_raw = message.servo6_raw
-            self._servo_output_raw.servo7_raw = message.servo7_raw
-            self._servo_output_raw.servo8_raw = message.servo8_raw
+        def listener(self, name, m):
+            def set_servo(chnum, v):
+                '''Private utility for handling servo messages'''
+                # use port to allow servo nums greater than 8
+                self._servos._update_servo(str(m.port * 16 + chnum), v)
 
-            if hasattr(message,'servo9_raw'): #Some ArduPilot implementations only send 8 channels over mavlink
-                self._servo_output_raw.servo9_raw = message.servo9_raw
-                self._servo_output_raw.servo10_raw = message.servo10_raw
-                self._servo_output_raw.servo11_raw = message.servo11_raw
-                self._servo_output_raw.servo12_raw = message.servo12_raw
-                self._servo_output_raw.servo13_raw = message.servo13_raw
-                self._servo_output_raw.servo14_raw = message.servo14_raw
-                self._servo_output_raw.servo15_raw = message.servo15_raw
-                self._servo_output_raw.servo16_raw = message.servo16_raw
-
-            # Notify all observers of new message (with new value)
-            # Note that argument `cache=False` by default so listeners
-            # are updated with every new message
-            self.notify_attribute_listeners('servo_output_raw', self._servo_output_raw)
+            set_servo(1, m.servo1_raw)
+            set_servo(2, m.servo1_raw)
+            set_servo(3, m.servo1_raw)
+            set_servo(4, m.servo1_raw)
+            set_servo(5, m.servo1_raw)
+            set_servo(6, m.servo1_raw)
+            set_servo(7, m.servo1_raw)
+            set_servo(8, m.servo1_raw)
+            if hasattr(m,'servo9_raw'):
+                set_servo(9, m.servo1_raw)
+                set_servo(10, m.servo10_raw)
+                set_servo(11, m.servo11_raw)
+                set_servo(12, m.servo12_raw)
+                set_servo(13, m.servo13_raw)
+                set_servo(14, m.servo14_raw)
+                set_servo(15, m.servo15_raw)
+                set_servo(16, m.servo16_raw)
+            self.notify_attribute_listeners('servos', self.servos)
 
         self._voltage = None
         self._current = None
@@ -1587,8 +1579,8 @@ class Vehicle(HasObservers):
     #
 
     @property
-    def servo_output_raw(self):
-        return self._servo_output_raw
+    def servos(self):
+        return self._servos
 
     @property
     def _mode_mapping(self):
@@ -2982,60 +2974,50 @@ class CommandSequence(object):
         self._vehicle._wploader.set(value, index + 1)
         self._vehicle._wpts_dirty = True
 
-class ServoOutputRaw(object):
+class Servos(dict):
     """
-    The RAW servo readings from the OUTPUT of the autopilot
-    This contains the true raw values without any scaling to allow data capture and system debugging.
-    The message definition is here: https://pixhawk.ethz.ch/mavlink/#SERVO_OUTPUT_RAW
+    A dictionary class for managing Servo channel information associated with a :py:class:`Vehicle`.
+
+    An object of this type is accessed through :py:attr:`Vehicle.servos`. 
+
     """
 
-    def __init__(self,
-                 time_boot_us=None, # Timestamp (microseconds since system boot)
-                 port=None,         # Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows to encode more than 8 servos.
-                 servo1_raw=None,   # Servo output 1 value, in microseconds
-                 servo2_raw=None,   # Etc..
-                 servo3_raw=None,
-                 servo4_raw=None,
-                 servo5_raw=None,
-                 servo6_raw=None,
-                 servo7_raw=None,
-                 servo8_raw=None,
-                 servo9_raw=None,
-                 servo10_raw=None,
-                 servo11_raw=None,
-                 servo12_raw=None,
-                 servo13_raw=None,
-                 servo14_raw=None,
-                 servo15_raw=None,
-                 servo16_raw=None):
+    def __init__(self, vehicle, count):
+        self._vehicle = vehicle
+        self._count = count
 
-        self.time_boot_us = time_boot_us
-        self.port = port
-        self.servo1_raw = servo1_raw
-        self.servo2_raw = servo2_raw
-        self.servo3_raw = servo3_raw
-        self.servo4_raw = servo4_raw
-        self.servo5_raw = servo5_raw
-        self.servo6_raw = servo6_raw
-        self.servo7_raw = servo7_raw
-        self.servo8_raw = servo8_raw
-        self.servo9_raw = servo9_raw
-        self.servo10_raw = servo10_raw
-        self.servo11_raw = servo11_raw
-        self.servo12_raw = servo12_raw
-        self.servo13_raw = servo13_raw
-        self.servo14_raw = servo14_raw
-        self.servo15_raw = servo15_raw
-        self.servo16_raw = servo16_raw
+        # populate readback
+        self._readonly = False
+        for k in range(0, count):
+            self[k + 1] = None
+        self._readonly = True
 
-    def __str__(self):
+    @property
+    def count(self):
         """
-        String representation used to print the ServoOutputRaw object.
+        The number of servos defined in the dictionary (currently 16).
         """
-        return "SERVO_OUTPUT_RAW: time_boot_us={},port={},servo1_raw={},servo2_raw={},servo3_raw={},servo4_raw={},servo5_raw={},servo6_raw={},servo7_raw={},servo8_raw={},servo9_raw={},servo10_raw={},servo11_raw={},servo12_raw={},servo13_raw={},servo14_raw={},servo15_raw={},servo16_raw={}".format(
-            self.time_boot_us, self.port, self.servo1_raw, self.servo2_raw, self.servo3_raw, self.servo4_raw,
-            self.servo5_raw, self.servo6_raw, self.servo7_raw, self.servo8_raw, self.servo9_raw, self.servo10_raw,
-            self.servo11_raw, self.servo12_raw, self.servo13_raw, self.servo14_raw, self.servo15_raw, self.servo16_raw)
+        return self._count
+
+    def __getitem__(self, key):
+        return dict.__getitem__(self, str(key))
+
+    def __setitem__(self, key, value):
+        if self._readonly:
+            raise TypeError('__setitem__ is not supported on Servos object')
+        return dict.__setitem__(self, str(key), value)
+
+    def __len__(self):
+        return self._count
+
+    def _update_servo(self, servo, value):
+        # If we have servos on different ports, we expand the Servos
+        # object to support them.
+        servo = int(servo)
+        self._readonly = False
+        self[servo] = value
+        self._readonly = True
+        self._count = max(self._count, servo)
 
 from dronekit.mavlink import MAVConnection
 
