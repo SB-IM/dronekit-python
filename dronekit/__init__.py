@@ -2341,6 +2341,17 @@ class Vehicle(HasObservers):
         msg = self.message_factory.play_tune_encode(0, 0, tune)
         self.send_mavlink(msg)
 
+    def set_servo(self, num, pwm):
+        msg = self.message_factory.command_long_encode(
+            0, 0,    # target system, target component
+            mavutil.mavlink.MAV_CMD_DO_SET_SERVO, #command
+            0, #confirmation
+            num,    # param 1, Servo number
+            pwm,          # param 2, PWM (microseconds, 1000 to 2000 typical)
+            0, 0, 0, 0, 0)    # param 3 ~ 7 not used
+        # send command to vehicle
+        self.send_mavlink(msg)
+
     def wait_ready(self, *types, **kwargs):
         """
         Waits for specified attributes to be populated from the vehicle (values are initially ``None``).
