@@ -1146,28 +1146,23 @@ class Vehicle(HasObservers):
         # Create a message listener using the decorator.
         @self.on_message('SERVO_OUTPUT_RAW')
         def listener(self, name, m):
-            def set_servo(chnum, v):
-                '''Private utility for handling servo messages'''
-                # use port to allow servo nums greater than 8
-                self._servos._update_servo(str(m.port * 16 + chnum), v)
-
-            set_servo(1, m.servo1_raw)
-            set_servo(2, m.servo2_raw)
-            set_servo(3, m.servo3_raw)
-            set_servo(4, m.servo4_raw)
-            set_servo(5, m.servo5_raw)
-            set_servo(6, m.servo6_raw)
-            set_servo(7, m.servo7_raw)
-            set_servo(8, m.servo8_raw)
+            self._servos._update_servo(1, m.servo1_raw)
+            self._servos._update_servo(2, m.servo2_raw)
+            self._servos._update_servo(3, m.servo3_raw)
+            self._servos._update_servo(4, m.servo4_raw)
+            self._servos._update_servo(5, m.servo5_raw)
+            self._servos._update_servo(6, m.servo6_raw)
+            self._servos._update_servo(7, m.servo7_raw)
+            self._servos._update_servo(8, m.servo8_raw)
             if hasattr(m,'servo9_raw'):
-                set_servo(9, m.servo9_raw)
-                set_servo(10, m.servo10_raw)
-                set_servo(11, m.servo11_raw)
-                set_servo(12, m.servo12_raw)
-                set_servo(13, m.servo13_raw)
-                set_servo(14, m.servo14_raw)
-                set_servo(15, m.servo15_raw)
-                set_servo(16, m.servo16_raw)
+                self._servos._update_servo(9, m.servo9_raw)
+                self._servos._update_servo(10, m.servo10_raw)
+                self._servos._update_servo(11, m.servo11_raw)
+                self._servos._update_servo(12, m.servo12_raw)
+                self._servos._update_servo(13, m.servo13_raw)
+                self._servos._update_servo(14, m.servo14_raw)
+                self._servos._update_servo(15, m.servo15_raw)
+                self._servos._update_servo(16, m.servo16_raw)
             self.notify_attribute_listeners('servos', self.servos)
 
         self._voltage = None
