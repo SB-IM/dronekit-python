@@ -1159,11 +1159,13 @@ class Vehicle(HasObservers):
             self._servos._update_servo(6, m.servo6_raw)
             self._servos._update_servo(7, m.servo7_raw)
             self._servos._update_servo(8, m.servo8_raw)
+            self._servos._update_servo(11, m.servo11_raw)
+            self._servos._update_servo(12, m.servo12_raw)
             if hasattr(m,'servo9_raw'):
                 self._servos._update_servo(9, m.servo9_raw)
                 self._servos._update_servo(10, m.servo10_raw)
-                self._servos._update_servo(11, m.servo11_raw)
-                self._servos._update_servo(12, m.servo12_raw)
+#                self._servos._update_servo(11, m.servo11_raw)
+#                self._servos._update_servo(12, m.servo12_raw)
                 self._servos._update_servo(13, m.servo13_raw)
                 self._servos._update_servo(14, m.servo14_raw)
                 self._servos._update_servo(15, m.servo15_raw)
@@ -2351,6 +2353,22 @@ class Vehicle(HasObservers):
             0, 0, 0, 0, 0)    # param 3 ~ 7 not used
         # send command to vehicle
         self.send_mavlink(msg)
+
+    def battery_lock(self):
+        self.message_factory.command_long_send(0, 0,mavutil.mavlink.MAV_CMD_DO_SET_SERVO, 0,12,1100,0, 0, 0, 0, 0)
+        time.sleep(1)
+        if (self.servos.get('12') == 1100):
+            return { 'battery_lock': 'Finished' }
+        else:
+            return { 'battery_lock': 'Failed' }
+
+    def battery_drop(self):
+        self.message_factory.command_long_send(0, 0,mavutil.mavlink.MAV_CMD_DO_SET_SERVO, 0,12,1880,0, 0, 0, 0, 0)
+        time.sleep(1)
+        if (self.servos.get('12') == 1880):
+            return { 'battery_drop': 'Finished' }
+        else:
+            return { 'battery_drop': 'Failed' }
 
     def wait_ready(self, *types, **kwargs):
         """
