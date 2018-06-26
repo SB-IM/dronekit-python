@@ -1123,21 +1123,26 @@ class Vehicle(HasObservers):
         # All keys are strings.
         self._channels = Channels(self, 8)
 
-        @self.on_message('RC_CHANNELS_RAW')
+        @self.on_message('RC_CHANNELS')
         def listener(self, name, m):
-            def set_rc(chnum, v):
-                '''Private utility for handling rc channel messages'''
-                # use port to allow ch nums greater than 8
-                self._channels._update_channel(str(m.port * 8 + chnum), v)
-
-            set_rc(1, m.chan1_raw)
-            set_rc(2, m.chan2_raw)
-            set_rc(3, m.chan3_raw)
-            set_rc(4, m.chan4_raw)
-            set_rc(5, m.chan5_raw)
-            set_rc(6, m.chan6_raw)
-            set_rc(7, m.chan7_raw)
-            set_rc(8, m.chan8_raw)
+            self._channels._update_channel(1, m.chan1_raw)
+            self._channels._update_channel(2, m.chan2_raw)
+            self._channels._update_channel(3, m.chan3_raw)
+            self._channels._update_channel(4, m.chan4_raw)
+            self._channels._update_channel(5, m.chan5_raw)
+            self._channels._update_channel(6, m.chan6_raw)
+            self._channels._update_channel(7, m.chan7_raw)
+            self._channels._update_channel(8, m.chan8_raw)
+            self._channels._update_channel(9, m.chan9_raw)
+            self._channels._update_channel(10, m.chan10_raw)
+            self._channels._update_channel(11, m.chan11_raw)
+            self._channels._update_channel(12, m.chan12_raw)
+            self._channels._update_channel(13, m.chan13_raw)
+            self._channels._update_channel(14, m.chan14_raw)
+            self._channels._update_channel(15, m.chan15_raw)
+            self._channels._update_channel(16, m.chan16_raw)
+            self._channels._update_channel(17, m.chan17_raw)
+            self._channels._update_channel(18, m.chan18_raw)
             self.notify_attribute_listeners('channels', self.channels)
 
         # Servo outputs
