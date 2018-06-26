@@ -2353,22 +2353,24 @@ class Vehicle(HasObservers):
             0, 0, 0, 0, 0)    # param 3 ~ 7 not used
         # send command to vehicle
         self.send_mavlink(msg)
-        
-    def battery_lock(self):
-        self.message_factory.command_long_send(0, 0,mavutil.mavlink.MAV_CMD_DO_SET_SERVO, 0,12,1100,0, 0, 0, 0, 0)
         time.sleep(1)
-        if (self.servos.get('12') == 1100):
-            return { 'battery_lock': 'Finished' }
-        else:
-            return { 'battery_lock': 'Failed' }
+        return self.servos.get(str(num))
 
-    def battery_drop(self):
-        self.message_factory.command_long_send(0, 0,mavutil.mavlink.MAV_CMD_DO_SET_SERVO, 0,12,1880,0, 0, 0, 0, 0)
-        time.sleep(1)
-        if (self.servos.get('12') == 1880):
-            return { 'battery_drop': 'Finished' }
-        else:
-            return { 'battery_drop': 'Failed' }
+    # def battery_lock(self):
+    #     self.message_factory.command_long_send(0, 0,mavutil.mavlink.MAV_CMD_DO_SET_SERVO, 0,12,1100,0, 0, 0, 0, 0)
+    #     time.sleep(1)
+    #     if (self.servos.get('12') == 1100):
+    #         return { 'battery_lock': 'Finished' }
+    #     else:
+    #         return { 'battery_lock': 'Failed' }
+
+    # def battery_drop(self):
+    #     self.message_factory.command_long_send(0, 0,mavutil.mavlink.MAV_CMD_DO_SET_SERVO, 0,12,1880,0, 0, 0, 0, 0)
+    #     time.sleep(1)
+    #     if (self.servos.get('12') == 1880):
+    #         return { 'battery_drop': 'Finished' }
+    #     else:
+    #         return { 'battery_drop': 'Failed' }
 
     def wait_ready(self, *types, **kwargs):
         """
