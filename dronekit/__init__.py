@@ -2353,7 +2353,7 @@ class Vehicle(HasObservers):
             0, 0, 0, 0, 0)    # param 3 ~ 7 not used
         # send command to vehicle
         self.send_mavlink(msg)
-
+        
     def battery_lock(self):
         self.message_factory.command_long_send(0, 0,mavutil.mavlink.MAV_CMD_DO_SET_SERVO, 0,12,1100,0, 0, 0, 0, 0)
         time.sleep(1)
