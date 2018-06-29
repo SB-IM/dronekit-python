@@ -1159,20 +1159,16 @@ class Vehicle(HasObservers):
             self._servos._update_servo(6, m.servo6_raw)
             self._servos._update_servo(7, m.servo7_raw)
             self._servos._update_servo(8, m.servo8_raw)
-            if hasattr(m,'servo11_raw'):
+            if hasattr(m,'servo9_raw'):
+                self._servos._update_servo(9, m.servo9_raw)
+                self._servos._update_servo(10, m.servo10_raw)
                 self._servos._update_servo(11, m.servo11_raw)
-            if hasattr(m,'servo12_raw'):
                 self._servos._update_servo(12, m.servo12_raw)
-#             if hasattr(m,'servo9_raw'):
-#                 self._servos._update_servo(9, m.servo9_raw)
-#                 self._servos._update_servo(10, m.servo10_raw)
-#                 self._servos._update_servo(11, m.servo11_raw)
-# #                self._servos._update_servo(12, m.servo12_raw)
-#                 self._servos._update_servo(13, m.servo13_raw)
-#                 self._servos._update_servo(14, m.servo14_raw)
-#                 self._servos._update_servo(15, m.servo15_raw)
-#                 self._servos._update_servo(16, m.servo16_raw)
-            self.notify_attribute_listeners('servos', self.servos)
+                self._servos._update_servo(13, m.servo13_raw)
+                self._servos._update_servo(14, m.servo14_raw)
+                self._servos._update_servo(15, m.servo15_raw)
+                self._servos._update_servo(16, m.servo16_raw)
+            self.notify_attribute_listeners('servos', self._servos)
 
         self._voltage = None
         self._current = None
